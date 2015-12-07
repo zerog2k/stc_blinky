@@ -8,8 +8,8 @@
 #include <stc12.h>
 #define SYSCLOCK    11059200
 #define BAUDRATE    9600
-#define BAUDTMR     ((0 - (SYSCLOCK / 3 / BAUDRATE)) & 0xFFFF)
-//#define BAUDTMR 	0xFE80 	// 9600bps @ 11.0592MHz
+#define BAUDTMR     ((0 - (SYSCLOCK / 3 / BAUDRATE / 12)) & 0xFF)
+//#define BAUDTMR 	0x80 	// 9600bps @ 11.0592MHz
 
 
 #define RXB P3_0
@@ -148,10 +148,9 @@ void UART_INIT()
 	REND = 0;
 	TCNT = 0;
 	RCNT = 0;
-	TMOD &= 0x0F; // Timer1 Mode 0
-	AUXR |= 0x40; // T1x12
-	TL1 = BAUDTMR & 0xFF;
-	TH1 = (BAUDTMR & 0xFF00) >> 8;
+	TMOD |= T1_M1; // Timer1 Mode 2
+	//AUXR |= 0x40; // T1x12
+	TH1 = BAUDTMR & 0xFF;
 	TR1 = 1;
 	ET1 = 1;
 	PT1 = 1;
