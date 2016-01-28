@@ -7,13 +7,14 @@
 #include <stc12.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "ds1302.h"
 
 /* ------------------------------------------------------------------------- */
 /* Printing functions */
 /* ------------------------------------------------------------------------- */
 
 #include "./soft_serial/serial.h"
-#define printf printf_small     // see sdcc user guide
+#define printf printf_fast     // see sdcc user guide
 
 // P0.1 called P5.5 on my board?
 #define LED P1_6     
@@ -22,6 +23,8 @@
 
 // counter
 int temp = 0;
+
+struct ds1302_rtc rtc;
 
 void _delay_ms(unsigned char ms)
 {	
@@ -40,6 +43,11 @@ void _delay_ms(unsigned char ms)
 }
 
 const char* startstring = "\nSTC15F204EA starting up...\n";
+uint8_t i, b;
+
+struct ram_config config;
+
+//struct ram_config config;
 
 int main()
 {
@@ -50,6 +58,23 @@ int main()
     printf("%s", startstring);
     
     LED = 1;
+    
+
+    ds_init();
+    
+    // intentionally corrupt magic bytes to test initialization
+    // ds_writebyte(DS_CMD_RAM >> 1 | 0x01, 0x22);
+    
+    ds_ram_config_init((uint8_t *) &config);    
+    
+    /*
+    // setup some test values
+    config.temp_F_C = 1;
+    config.temp_cal = 4;
+    config.alarm_on = 1;
+    config.chime_hour_start = 10;
+    config.chime_hour_stop = 20;
+    */
     
     while(1)
     {                
@@ -65,7 +90,28 @@ int main()
         _delay_ms(250);
         _delay_ms(250);
         _delay_ms(250);
+        
+        ds_readburst((uint8_t *) &rtc); // read rtc        
+                
         printf("counter: %d \n", temp);
+        printf("yy mm dd hh mm ss am/pm 24/12 ww \n%d%d %d%d %d%d %d%d %d%d %d%d     %d     %d  %d\n",
+            rtc.tenyear, rtc.year, rtc.tenmonth, rtc.month, rtc.tenday, rtc.day, rtc.h12.tenhour, rtc.h12.hour, 
+            rtc.tenminutes, rtc.minutes, rtc.tenseconds, rtc.seconds, rtc.h12.pm, rtc.h12.hour_12_24, rtc.weekday);
+        printf("ram: ");
+        for (i=0; i<8; i++) {
+            printf("%02x ", ds_readbyte( DS_CMD_RAM >> 1 | i));
+        } 
+  
+        config.hour_12_24 = rtc.h12.hour_12_24;
+        
+        printf("\nconfig: hour_12_24=%d, temp_F_C=%d, alarm_on=%d, alarm_hour=%d, alarm_minute=%d\n", 
+                config.hour_12_24, config.temp_F_C, config.alarm_on, config.alarm_hour, config.alarm_minute);
+        printf("chime_on=%d, chime_hour_start=%d, chime_hour_stop=%d, temp_cal=%d\n\n",
+                config.chime_on, config.chime_hour_start, config.chime_hour_stop, config.temp_cal);
+        
+        ds_ram_config_write((uint8_t *) &config);
+        _delay_ms(250);
+        _delay_ms(250);        
         temp++;
         WDT_CONTR |= 1 << 4; // clear wdt
     }

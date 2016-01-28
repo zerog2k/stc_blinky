@@ -4,7 +4,7 @@ STCGAL ?= stcgal/stcgal.py
 FLASHFILE ?= blinky.hex
 SYSCLK ?= 11059
 
-SRC = src/soft_serial/serial.c
+SRC = src/soft_serial/serial.c src/ds1302.c
 
 OBJ=$(patsubst src%.c,build%.rel, $(SRC))
 
