@@ -2,3 +2,6 @@
 *.ihx
 *.bin
 build/*
+.pioenvs
+.piolibdeps
+.vscode/
