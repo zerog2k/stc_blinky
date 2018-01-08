@@ -1,34 +1,41 @@
 # STC15F204EA blinky example
 Simple blinky example which uses [sdcc](http://sdcc.sf.net) to build and [stcgal](https://github.com/grigorig/stcgal) to flash firmware on to STC15F204EA series microcontroller.
 
-## hardware
+### hardware
 Hardware is assumed to be a generic LED with anode (+) connected to VCC (3.3-5V) through current limiting resistor (~1kohm) with cathode (-) connected to LED pin (as defined in src/blinky.c) of uC.
 uC connected to PC via cheap USB-UART adapter, e.g. CP2102.
 
-## requirements
+### requirements
 * linux or mac (windows untested)
 * sdcc installed and in the path
 * stcgal (or optionally stc-isp)
 
-## usage
+### usage
 ```
 make clean
 make
 make flash
 ```
 
-## options
+### options
 * override default serial port:
 `PORT=/dev/ttyUSB0 make flash`
 
-## use STC-ISP flash tool
+### use STC-ISP flash tool
 Instead of stcgal, you can use official stc-isp tool, e.g stc-isp-15xx-v6.85I.exe, to flash.
 A windows app, but worked fine for me under mac and linux with wine.
 It can take the .hex or .bin.
 
-## clock assumptions
+### clock assumptions
 Some of the code assumes 11.0592 MHz internal RC system clock (set by stc-isp or stcgal).
 Specifically, the soft serial code (src/soft_serial/serial.c, SYSCLK) and delay routines (src/blinky.c) would need to be adjusted if this is different.
+
+## platformio support
+_experimental_
+
+* install platformio mcs51 platform:
+`platformio platforms install https://github.com/zerog2k/platform-mcs51.git`
+* adjust `upload_port` in `platformio.ini`
 
 ### references
 http://www.stcmcu.com (mostly in Chinese)

@@ -12,7 +12,8 @@
 /* Printing functions */
 /* ------------------------------------------------------------------------- */
 
-#include "./soft_serial/serial.h"
+//#include "./soft_serial/serial.h"
+#include "serial.h"
 #define printf printf_small     // see sdcc user guide
 
 // P0.1 called P5.5 on my board?
@@ -21,7 +22,7 @@
 /* ------------------------------------------------------------------------- */
 
 // counter
-int temp = 0;
+int temp = 100;
 
 void _delay_ms(unsigned char ms)
 {	
