@@ -33,9 +33,9 @@ Specifically, the soft serial code (src/soft_serial/serial.c, SYSCLK) and delay 
 ## platformio support
 _experimental_
 
-* install platformio mcs51 platform:
-`platformio platforms install https://github.com/zerog2k/platform-mcs51.git`
+* assumes you have platformio installed, e.g. in vscode
 * adjust `upload_port` in `platformio.ini`
+  * may need to install stcgal: `cd stcgal; sudo python setup.py install`
 
 ### references
 http://www.stcmcu.com (mostly in Chinese)
